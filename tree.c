@@ -56,45 +56,50 @@ struct node *addToTree(int data)
     }
 }
 
-struct node* findMin(struct node* root) {
-    while (root->leftChild != NULL)
-        root = root->leftChild;
+
+struct node * iSuccessor(struct node *root)
+{
+    root = root -> rightChild;
+    while(root -> leftChild != NULL)
+    {
+        root = root -> leftChild;
+    }
     return root;
 }
 
-struct node* deleteNode(struct node* root, int key) {
-    if (root == NULL) {
-        return root; // Tree is empty
+struct node * deleteNode(struct node *root, int key)
+{
+    if(root == NULL)
+     return NULL; //empty tree
+    if(root -> data > key)
+    {
+        root -> leftChild = deleteNode(root->leftChild,key);
     }
-
-    // Traverse the tree to find the node to delete
-    if (key < root->data) {
-        root->leftChild = deleteNode(root->leftChild, key);
-    } else if (key > root->data) {
-        root->rightChild = deleteNode(root->rightChild, key);
-    } else {
-        // Node to delete found
-        // Case 1: Node has no children (leaf node)
-        if (root->leftChild == NULL && root->rightChild == NULL) {
-            free(root);
-            return NULL;
-        }
-        // Case 2: Node has one child
-        else if (root->leftChild == NULL) {
-            struct node* temp = root->rightChild;
-            free(root);
-            return temp;
-        } else if (root->rightChild == NULL) {
-            struct node* temp = root->leftChild;
-            free(root);
-            return temp;
-        }
-        // Case 3: Node has two children
-        else {
-            struct node* temp = findMin(root->rightChild); // Find in-order successor
-            root->data = temp->data; // Replace data with successor
-            root->rightChild = deleteNode(root->rightChild, temp->data); // Delete successor
-        }
+    else if(root -> data < key)
+    {
+        root -> rightChild = deleteNode(root->rightChild,key);
+    }
+    if(root -> leftChild == NULL && root -> rightChild == NULL)
+    {
+        free(root);
+        return NULL;
+    }
+    else if(root -> leftChild == NULL)
+    {
+        struct node *temp = root -> rightChild;
+        free(root);
+        return temp;
+    }
+    else if(root -> rightChild == NULL)
+    {
+        struct node *temp = root -> leftChild;
+        free(root);
+        return temp;
+    }
+    else{
+        struct node *temp = iSuccessor(root);
+        root -> data = temp -> data;
+        root -> rightChild = deleteNode(root->rightChild,temp->data);
     }
     return root;
 }
@@ -182,7 +187,7 @@ int main()
         printf("Element is found.");
     }
 
-    // Deleting
+    // Delete the element
     int delItem;
     printf("\nEnter item to delete: ");
     scanf("%d", &delItem);
